@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt::{Display, Formatter};
 use string_builder::Builder;
 
 pub struct HuffmannCode;
@@ -108,7 +107,7 @@ impl HuffmannCode {
             nodes.sort_by(|a: &Node, b: &Node| b.frequency.partial_cmp(&(a.frequency)).unwrap());
         }
     
-        data.sort_by(|a: &Node, b: &Node| b.frequency.partial_cmp(&(a.identifier)).unwrap());
+        data.sort_by(|a: &Node, b: &Node| b.identifier.partial_cmp(&(a.identifier)).unwrap());
 
 
         let mut all_directions:Vec<Direction> = Vec::new();
@@ -129,7 +128,7 @@ impl HuffmannCode {
 
         let ending_node: &Node = HuffmannCode::get_node_from_char(nodes, target).unwrap();
 
-        let mut tuple: Option<(Identifier, Direction)> = HuffmannCode::get_parent_from_child_direction(nodes, ending_node.identifier);
+        let tuple: Option<(Identifier, Direction)> = HuffmannCode::get_parent_from_child_direction(nodes, ending_node.identifier);
         
         let (mut parent, direction) = tuple.unwrap();
 
@@ -144,26 +143,6 @@ impl HuffmannCode {
         
         path.reverse();
         return path;
-    }
-    
-    fn traverse(target: char, start: Identifier, nodes: &[Node]) -> Vec<Identifier> {
-        let mut path: Vec<Identifier> = Vec::new();
-    
-        let ending_node: &Node = HuffmannCode::get_node_from_char(nodes, target).unwrap();
-        path.push(ending_node.identifier);
-    
-        let mut parent: &Node = HuffmannCode::get_parent_from_child(nodes, ending_node.identifier).unwrap();
-    
-        path.push(parent.identifier);
-    
-        while parent.identifier != start {
-            if let Some(temp) = HuffmannCode::get_parent_from_child(nodes, parent.identifier) {
-                parent = temp;
-                path.push(parent.identifier);
-            }
-        }
-    
-        path
     }
 
     fn get_parent_from_child_direction(nodes: &[Node], child: Identifier) -> Option<(Identifier, Direction)> {
@@ -184,24 +163,6 @@ impl HuffmannCode {
         return Option::None;
     }
 
-    fn get_parent_from_child(nodes: &[Node], child: Identifier) -> Option<&Node> {
-        for idx in 0..nodes.len() {
-            if let Some(left) = nodes.get(idx).unwrap().left {
-                if left == child {
-                    return HuffmannCode::get_node_from_identifier(nodes, nodes.get(idx).unwrap().identifier);
-                }
-            };
-
-            if let Some(right) = nodes.get(idx).unwrap().right {
-                if right == child {
-                    return HuffmannCode::get_node_from_identifier(nodes, nodes.get(idx).unwrap().identifier);
-                }
-            };
-        }
-
-        return Option::None;
-    }
-
     fn get_node_from_char(nodes: &[Node], target: char) -> Option<&Node> {
         for idx in 0..nodes.len() {
             if let Some(comparing_char) = nodes.get(idx).unwrap().char {
@@ -215,12 +176,26 @@ impl HuffmannCode {
     }
     
     fn get_node_from_identifier(nodes: &[Node], i: usize) -> Option<&Node> {
-        for idx in 0..nodes.len() {
-            if nodes.get(idx).unwrap().identifier == i {
-                return Option::Some(nodes.get(idx).unwrap());
+        let mut size = nodes.len();
+        let mut left = 0;
+        let mut right = size;
+
+        while left < right {
+            let mid = left + size / 2;
+
+            let cmp:i32 = nodes.get(mid).unwrap().identifier as i32 - i as i32;
+
+            if cmp > 0 {
+                left = mid + 1;
+            } else if cmp < 0 {
+                right = mid;
+            } else {
+                return nodes.get(mid);
             }
+
+            size = right - left;
         }
-    
+
         return Option::None;
     }
     

@@ -4,7 +4,7 @@ mod huffman_compression;
 
 fn main() {
     let text: &str = "Wer reitet so spaet durch Nacht und Wind, es ist der Vater mit einem Kind; Er hat den Knaben wohl in dem Arm, Er fasst ihn sicher, er haelt ihn warm.";
-    // let text: &str = "aababcabcd";
+    //let text: &str = "aababcabcd";
     let compressor: HuffmannCode = HuffmannCode::new();
     let huffman_result: HuffmannResult = compressor.huffmann_algorithm(text);
 
@@ -12,6 +12,8 @@ fn main() {
 
     let clear_text: String = compressor.encrypted_string_to_text(&huffman_result);
     println!("{}", clear_text);
+
+    assert_eq!(text, clear_text);
 
     println!("The original text size is: {}Bits. The compressed text is {}Bits. It's a total difference of: {}Bits", text.len() * 8, (&huffman_result.encrypted_string).len(), difference(&huffman_result.encrypted_string, text));
 }
