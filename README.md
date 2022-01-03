@@ -6,8 +6,6 @@
 
 ## Known problemes
 ---
-The current implementation searches linearly through the data array. This could be done more efficiently.
-
-Also there are no real self-referencing structs. They hold an `Identifier` property, which is just a `usize`
+There are no real self-referencing structs. They hold an `Identifier` property, which is just a `usize`-Index
 
 <img src="https://i.imgur.com/j5LI4V3.png" width="300">
